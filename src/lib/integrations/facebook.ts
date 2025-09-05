@@ -65,7 +65,7 @@ export class FacebookIntegration extends BaseIntegration {
     // Converter para formato padronizado
     const metrics: IntegrationMetric[] = []
     
-    Object.entries(groupedMetrics).forEach(([metricName, data]) => {
+    Object.entries(groupedMetrics).forEach(([metricName, data]: [string, unknown]) => {
       const typedData = data as Array<{metric_name: string, metric_value: number, metric_period: string, date_start?: string}>
       const latestValue = typedData[0]?.metric_value || 0
       const previousValue = typedData[1]?.metric_value || 0

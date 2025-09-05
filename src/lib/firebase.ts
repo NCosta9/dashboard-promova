@@ -1,4 +1,4 @@
-import { initializeApp } from 'firebase/app'
+import { initializeApp, getApps, getApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 
 const firebaseConfig = {
@@ -10,10 +10,18 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 }
 
-// Inicializar Firebase
-const app = initializeApp(firebaseConfig)
+// Inicializar Firebase apenas se não foi inicializado ainda
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp()
 
-// Inicializar Firebase Auth
-export const auth = getAuth(app)
+// Função para obter auth de forma lazy
+export const getFirebaseAuth = () => {
+  if (typeof window === 'undefined') {
+    // No servidor, retorna null para evitar erros durante o build
+    return null
+  }
+  return getAuth(app)
+}
+
+export const auth = getFirebaseAuth()
 
 export default app

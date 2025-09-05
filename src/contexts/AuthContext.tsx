@@ -2,8 +2,8 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { User, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth'
-import { auth } from '@/lib/firebase'
-import { supabase } from '@/lib/supabase'
+import { getFirebaseAuth } from '@/lib/firebase'
+import { getSupabase } from '@/lib/supabase'
 
 interface AuthContextType {
   user: User | null
@@ -28,6 +28,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    const auth = getFirebaseAuth()
+    if (!auth) return
+    
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUser(user)
@@ -62,18 +65,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         displayName: user.displayName
       })
 
-      // Testar conexão com Supabase primeiro
+      // Testar conexão com Supabase
+      const supabase = getSupabase()
+      if (!supabase) {
+        console.error('Supabase não está disponível')
+        return
+      }
+
       const { error: testError } = await supabase
         .from('users')
         .select('count')
         .limit(1)
+        .single()
 
-      if (testError) {
+      if (testError && testError.code !== 'PGRST116') {
         console.error('Erro de conexão com Supabase:', testError)
         return
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as unknown as {
+        from: (table: string) => {
+          upsert: (data: Record<string, unknown>, options?: Record<string, unknown>) => {
+            select: () => Promise<{ data: unknown; error: unknown }>
+          }
+        }
+      })
         .from('users')
         .upsert({
           firebase_uid: user.uid,
@@ -87,12 +103,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .select()
 
       if (error) {
+        const errorObj = error as { message?: string; details?: string; hint?: string; code?: string }
         console.error('Erro ao sincronizar usuário com Supabase:', {
           error: error,
-          message: error.message || 'Mensagem não disponível',
-          details: error.details || 'Detalhes não disponíveis',
-          hint: error.hint || 'Dica não disponível',
-          code: error.code || 'Código não disponível'
+          message: errorObj.message || 'Mensagem não disponível',
+          details: errorObj.details || 'Detalhes não disponíveis',
+          hint: errorObj.hint || 'Dica não disponível',
+          code: errorObj.code || 'Código não disponível'
         })
       } else {
         console.log('Usuário sincronizado com sucesso:', data)
@@ -110,6 +127,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
+      const auth = getFirebaseAuth()
+      if (!auth) throw new Error('Firebase Auth não disponível')
       await signInWithEmailAndPassword(auth, email, password)
     } catch (error) {
       console.error('Erro ao fazer login:', error)
@@ -119,6 +138,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password: string) => {
     try {
+      const auth = getFirebaseAuth()
+      if (!auth) throw new Error('Firebase Auth não disponível')
       await createUserWithEmailAndPassword(auth, email, password)
     } catch (error) {
       console.error('Erro ao criar conta:', error)
@@ -128,6 +149,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     try {
+      const auth = getFirebaseAuth()
+      if (!auth) throw new Error('Firebase Auth não disponível')
       await signOut(auth)
     } catch (error) {
       console.error('Erro ao fazer logout:', error)

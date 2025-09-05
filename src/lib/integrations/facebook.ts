@@ -66,8 +66,9 @@ export class FacebookIntegration extends BaseIntegration {
     const metrics: IntegrationMetric[] = []
     
     Object.entries(groupedMetrics).forEach(([metricName, data]) => {
-      const latestValue = data[0]?.metric_value || 0
-      const previousValue = data[1]?.metric_value || 0
+      const typedData = data as Array<{metric_name: string, metric_value: number, metric_period: string, date_start?: string}>
+      const latestValue = typedData[0]?.metric_value || 0
+      const previousValue = typedData[1]?.metric_value || 0
       const change = latestValue - previousValue
       
       metrics.push({
@@ -75,8 +76,8 @@ export class FacebookIntegration extends BaseIntegration {
         value: latestValue,
         change: change,
         changeType: change >= 0 ? 'increase' : 'decrease',
-        period: data[0]?.metric_period || 'day',
-        date: data[0]?.date_start || new Date().toISOString().split('T')[0]
+        period: typedData[0]?.metric_period || 'day',
+        date: typedData[0]?.date_start || new Date().toISOString().split('T')[0]
       })
     })
 

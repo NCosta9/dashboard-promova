@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import {
   LineChart,
@@ -33,20 +33,23 @@ interface InsightsData {
   page_clicks?: Array<{ date: string; value: number }>
 }
 
+interface FacebookIntegration {
+  id: string
+  page_id: string
+  page_name: string
+  access_token: string
+  user_id: string
+  created_at: string
+}
+
 export default function FacebookMetricsPage() {
   const { user } = useAuth()
   const [insights, setInsights] = useState<InsightsData>({})
   const [chartData, setChartData] = useState<ChartData[]>([])
   const [loading, setLoading] = useState(false)
-  const [integration, setIntegration] = useState<any>(null)
+  const [integration, setIntegration] = useState<FacebookIntegration | null>(null)
 
-  useEffect(() => {
-    if (user) {
-      loadInsights()
-    }
-  }, [user])
-
-  const loadInsights = async () => {
+  const loadInsights = useCallback(async () => {
     if (!user) return
     
     setLoading(true)
@@ -64,7 +67,7 @@ export default function FacebookMetricsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user])
 
   const processChartData = (insightsData: InsightsData) => {
     const dates = new Set<string>()
@@ -72,7 +75,7 @@ export default function FacebookMetricsPage() {
     // Coletar todas as datas disponíveis
     Object.values(insightsData).forEach(metricData => {
       if (metricData) {
-        metricData.forEach(item => dates.add(item.date))
+        metricData.forEach((item: {date: string}) => dates.add(item.date))
       }
     })
 
@@ -111,6 +114,12 @@ export default function FacebookMetricsPage() {
     if (!data || data.length === 0) return 0
     return data.reduce((sum, item) => sum + item.value, 0)
   }
+
+  useEffect(() => {
+    if (user) {
+      loadInsights()
+    }
+  }, [user, loadInsights])
 
   if (!integration) {
     return (
@@ -402,7 +411,7 @@ export default function FacebookMetricsPage() {
           </div>
           <h3 className="mt-2 text-sm font-medium text-gray-900">Nenhum dado disponível</h3>
           <p className="mt-1 text-sm text-gray-500">
-            Clique em "Atualizar" para buscar as métricas mais recentes do Facebook.
+            Clique em &quot;Atualizar&quot; para buscar as métricas mais recentes do Facebook.
           </p>
         </div>
       )}

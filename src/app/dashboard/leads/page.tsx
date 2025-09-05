@@ -8,7 +8,7 @@ interface Lead {
   id: string
   facebook_lead_id: string
   form_name: string
-  lead_data: Record<string, any>
+  lead_data: Record<string, string | number | boolean>
   created_time: string
   status: 'new' | 'contacted' | 'qualified' | 'converted'
   notes?: string
@@ -99,8 +99,8 @@ export default function LeadsPage() {
   const filteredLeads = leads.filter(lead => {
     const matchesFilter = filter === 'all' || lead.status === filter
     const matchesSearch = searchTerm === '' || 
-      lead.lead_data.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      lead.lead_data.email?.toLowerCase().includes(searchTerm.toLowerCase())
+      (typeof lead.lead_data.name === 'string' && lead.lead_data.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (typeof lead.lead_data.email === 'string' && lead.lead_data.email.toLowerCase().includes(searchTerm.toLowerCase()))
     return matchesFilter && matchesSearch
   })
 

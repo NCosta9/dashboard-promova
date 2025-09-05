@@ -23,13 +23,14 @@ export class WhatsAppIntegration extends BaseIntegration {
     return whatsappAuthUrl.toString()
   }
 
-  async disconnect(integrationId: string): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async disconnect(_integrationId: string): Promise<void> {
     // Implementação futura da desconexão
-    console.log('Desconectando WhatsApp:', integrationId)
     throw new Error('Integração WhatsApp ainda não implementada')
   }
 
-  async getMetrics(integrationId: string): Promise<IntegrationMetric[]> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async getMetrics(_integrationId: string): Promise<IntegrationMetric[]> {
     // Métricas do WhatsApp Business: mensagens enviadas, entregues, lidas, etc.
     return [
       {
@@ -59,17 +60,20 @@ export class WhatsAppIntegration extends BaseIntegration {
     ]
   }
 
-  async getLeads(integrationId: string): Promise<IntegrationLead[]> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async getLeads(_integrationId: string): Promise<IntegrationLead[]> {
     // Leads capturados via WhatsApp
     return []
   }
 
-  async isConnected(userId: string): Promise<boolean> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async isConnected(_userId: string): Promise<boolean> {
     // Verificar se há integração ativa do WhatsApp
     return false
   }
 
-  async getConnectionStatus(userId: string): Promise<IntegrationStatus> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async getConnectionStatus(_userId: string): Promise<IntegrationStatus> {
     return {
       isConnected: false,
       error: 'Integração WhatsApp ainda não implementada'

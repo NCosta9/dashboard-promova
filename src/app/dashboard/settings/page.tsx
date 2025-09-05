@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { Settings, Facebook, Trash2, CheckCircle, AlertCircle } from 'lucide-react'
+import { Facebook, Trash2, CheckCircle, AlertCircle } from 'lucide-react'
 
 interface Integration {
   id: string
@@ -15,7 +15,6 @@ interface Integration {
 export default function SettingsPage() {
   const { user } = useAuth()
   const [integrations, setIntegrations] = useState<Integration[]>([])
-  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     if (user) {
@@ -24,7 +23,6 @@ export default function SettingsPage() {
   }, [user])
 
   const loadIntegrations = async () => {
-    setLoading(true)
     try {
       // Aqui você implementaria a busca de integrações da API
       // Por enquanto, vamos usar dados mockados
@@ -32,8 +30,6 @@ export default function SettingsPage() {
       setIntegrations(mockIntegrations)
     } catch (error) {
       console.error('Erro ao carregar integrações:', error)
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -52,6 +48,7 @@ export default function SettingsPage() {
     console.log('Desconectar integração:', integrationId)
   }
 
+  // Remover a variável Settings não utilizada
   return (
     <div className="space-y-6">
       {/* Header */}

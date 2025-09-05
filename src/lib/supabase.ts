@@ -41,7 +41,7 @@ export interface Lead {
   facebook_lead_id: string
   form_id: string
   form_name: string
-  lead_data: Record<string, any>
+  lead_data: Record<string, string | number | boolean>
   created_time: string
   created_at: string
 }

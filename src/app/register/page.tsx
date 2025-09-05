@@ -34,7 +34,7 @@ export default function RegisterPage() {
     try {
       await signUp(email, password)
       router.push('/dashboard')
-    } catch (error: any) {
+    } catch (error: unknown) {
       setError('Erro ao criar conta. Tente novamente.')
       console.error('Erro no registro:', error)
     } finally {

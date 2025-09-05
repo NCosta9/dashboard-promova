@@ -126,7 +126,7 @@ export async function GET(request: NextRequest) {
         period: insight.metric_period
       })
       return acc
-    }, {} as Record<string, any[]>)
+    }, {} as Record<string, Array<{metric_name: string, metric_value: number, metric_period: string}>>)
 
     return NextResponse.json({
       success: true,

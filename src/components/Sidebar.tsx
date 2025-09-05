@@ -88,10 +88,23 @@ export default function Sidebar() {
   )
 }
 
+interface NavigationItem {
+  name: string
+  href: string
+  icon: React.ComponentType<{ className?: string }>
+  current?: boolean
+}
+
+interface User {
+  uid: string
+  email: string | null
+  displayName: string | null
+}
+
 function SidebarContent({ navigation, pathname, user, onLogout }: {
-  navigation: any[]
+  navigation: NavigationItem[]
   pathname: string
-  user: any
+  user: User | null
   onLogout: () => void
 }) {
   return (

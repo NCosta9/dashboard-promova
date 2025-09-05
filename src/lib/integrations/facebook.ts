@@ -60,7 +60,7 @@ export class FacebookIntegration extends BaseIntegration {
       }
       acc[insight.metric_name].push(insight)
       return acc
-    }, {} as Record<string, any[]>)
+    }, {} as Record<string, Array<{metric_name: string, metric_value: number, metric_period: string}>>)
 
     // Converter para formato padronizado
     const metrics: IntegrationMetric[] = []
@@ -195,7 +195,7 @@ export class FacebookIntegration extends BaseIntegration {
     await this.syncLeads(integration)
   }
 
-  private async syncInsights(integration: any): Promise<void> {
+  private async syncInsights(integration: {id: string, page_id: string, access_token: string}): Promise<void> {
     const endDate = new Date()
     const startDate = new Date()
     startDate.setDate(startDate.getDate() - 30)
@@ -244,7 +244,7 @@ export class FacebookIntegration extends BaseIntegration {
     }
   }
 
-  private async syncLeads(integration: any): Promise<void> {
+  private async syncLeads(integration: {id: string, page_id: string, access_token: string}): Promise<void> {
     try {
       // Buscar formulários de lead ads
       const formsResponse = await fetch(
@@ -284,8 +284,8 @@ export class FacebookIntegration extends BaseIntegration {
     }
   }
 
-  private processLeadData(fieldData: any[]): Record<string, any> {
-    const processed: Record<string, any> = {}
+  private processLeadData(fieldData: Array<{name: string, values: string[]}>): Record<string, string> {
+    const processed: Record<string, string> = {}
     
     fieldData.forEach(field => {
       if (field.name && field.values && field.values.length > 0) {

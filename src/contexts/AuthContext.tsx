@@ -26,11 +26,6 @@ export function useAuth() {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
-  const [isClient, setIsClient] = useState(false)
-
-  useEffect(() => {
-    setIsClient(true)
-  }, [])
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -68,7 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
 
       // Testar conexão com Supabase primeiro
-      const { data: testData, error: testError } = await supabase
+      const { error: testError } = await supabase
         .from('users')
         .select('count')
         .limit(1)
@@ -142,24 +137,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const value = {
     user,
-    loading: loading || !isClient,
+    loading,
     signIn,
     signUp,
     logout
-  }
-
-  if (!isClient) {
-    return (
-      <AuthContext.Provider value={{
-        user: null,
-        loading: true,
-        signIn,
-        signUp,
-        logout
-      }}>
-        {children}
-      </AuthContext.Provider>
-    )
   }
 
   return (

@@ -9,8 +9,8 @@ export abstract class BaseIntegration {
   // Métodos que devem ser implementados por cada integração
   abstract connect(userId: string): Promise<string> // Retorna URL de conexão
   abstract disconnect(integrationId: string): Promise<void>
-  abstract getMetrics(integrationId: string): Promise<any>
-  abstract getLeads?(integrationId: string): Promise<any[]>
+  abstract getMetrics(integrationId: string): Promise<IntegrationMetric[]>
+  abstract getLeads?(integrationId: string): Promise<IntegrationLead[]>
   abstract isConnected(userId: string): Promise<boolean>
   abstract getConnectionStatus(userId: string): Promise<IntegrationStatus>
 }
@@ -39,7 +39,7 @@ export interface IntegrationLead {
   name?: string
   email?: string
   phone?: string
-  data: Record<string, any>
+  data: Record<string, string | number | boolean>
   createdAt: string
   status: 'new' | 'contacted' | 'qualified' | 'converted'
 }
